@@ -1,0 +1,16 @@
+@import "@fortawesome/fontawesome-free/css/all.min.css";
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #0a0a1a;
+  background-image: radial-gradient(circle at 20% 20%, #002c5e 0%, transparent 40%),
+                    radial-gradient(circle at 80% 80%, #00c8ff22 0%, transparent 50%);
+  color: white;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
