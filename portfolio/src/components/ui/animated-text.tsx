@@ -45,7 +45,7 @@ export function AnimatedText({ text, className = '', delay = 0, as: Component = 
   // Split text while preserving spaces
   const characters = text.split('');
 
-  const MotionComponent = motion.create ? motion.create(Component as any) : motion(Component as any);
+  const MotionComponent = motion.create(Component);
 
   return (
     <MotionComponent

@@ -69,7 +69,7 @@ export function BackgroundAtmosphere() {
       z: Math.random() * 0.5 + 0.2
     }));
 
-    const render = (time: number) => {
+    const render = () => {
       ctx.clearRect(0, 0, w, h);
 
       mouse.x += (mouse.targetX - mouse.x) * 0.05;
@@ -119,7 +119,7 @@ export function BackgroundAtmosphere() {
         const alpha = (Math.sin(box.phase) * 0.5 + 0.5) * 0.04;
         
         const bx = box.x;
-        let by = box.y - scrollY * box.z;
+        const by = box.y - scrollY * box.z;
         
         if (by < -500) box.y += 4500;
         if (by > h + 500) box.y -= 4500;
@@ -159,7 +159,7 @@ export function BackgroundAtmosphere() {
         if (p.y < 0) p.y = 3000;
         if (p.y > 3000) p.y = 0;
 
-        let screenY = p.y - scrollY * p.z;
+        const screenY = p.y - scrollY * p.z;
         
         if (screenY < -500) p.y += 3500;
         if (screenY > h + 500) p.y -= 3500;
@@ -226,7 +226,7 @@ export function BackgroundAtmosphere() {
       animationFrameId = requestAnimationFrame(render);
     };
 
-    render(0);
+    render();
 
     return () => {
       cancelAnimationFrame(animationFrameId);

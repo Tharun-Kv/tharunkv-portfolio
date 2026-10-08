@@ -15,7 +15,7 @@ export default function Projects() {
         </ScrollReveal>
 
         <div className="mt-24 grid grid-cols-1 gap-16 md:gap-24">
-          {projects.map((project, index) => (
+          {projects.map((project) => (
             <ScrollReveal key={project.id} delay={0.1}>
               <div className="group relative border border-[#222] bg-[#0a0a0a] rounded-3xl overflow-hidden hover:border-[#444] transition-colors duration-500">
                 <div className="relative z-10 p-8 md:p-12 lg:p-16 flex flex-col md:flex-row gap-12">

@@ -36,7 +36,7 @@ export default function Experience() {
         </ScrollReveal>
 
         <div className="mt-20 flex flex-col gap-12">
-          {experiences.map((exp, index) => (
+          {experiences.map((exp) => (
             <ScrollReveal key={exp.id} delay={0.1} direction="up">
               <div className="relative group p-8 md:p-12 border border-[#222] bg-[#0a0a0a] rounded-3xl hover:border-[#444] transition-all duration-500 hover:-translate-y-1 overflow-hidden">
                 
