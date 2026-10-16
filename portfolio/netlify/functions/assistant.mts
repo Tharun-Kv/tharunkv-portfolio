@@ -1,3 +1,5 @@
+import { GoogleGenAI } from '@google/genai';
+
 type PortfolioSource = {
   title: string;
   content: string;
@@ -69,9 +71,9 @@ function groundedFallback(question: string, sources: PortfolioSource[]) {
     return 'Hi! I’m Jeo, Tharun K V’s portfolio assistant. What would you like to know about his work?';
   }
   if (sources.length) {
-    return `Gemini is busy, but here is what Tharun’s portfolio says:\n\n${sources.slice(0, 3).map(({ title, content }) => `• ${title}: ${content}`).join('\n\n')}`;
+    return `AI responses are temporarily unavailable, but here is what Tharun’s portfolio says:\n\n${sources.slice(0, 3).map(({ title, content }) => `• ${title}: ${content}`).join('\n\n')}`;
   }
-  return 'Gemini is temporarily busy. I can still help with Tharun’s projects, skills, experience, education, achievements, certifications, resume, or contact details. Try asking about one of those topics.';
+  return 'AI responses are temporarily unavailable. I can still help with Tharun’s projects, skills, experience, education, achievements, certifications, resume, or contact details. Try asking about one of those topics.';
 }
 
 export default async function handler(request: Request) {
@@ -87,10 +89,6 @@ export default async function handler(request: Request) {
 
   const sources = cleanSources(payload?.context);
   const history = cleanHistory(payload?.history);
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) {
-    return jsonResponse({ text: groundedFallback(question, sources), sources: sources.map(({ title, href }) => ({ title, href })) });
-  }
   const portfolioNotes = sources.length
     ? sources.map(({ title, content, href }) => `- ${title} (${href}): ${content}`).join('\n')
     : 'No portfolio notes matched this question.';
@@ -106,47 +104,26 @@ export default async function handler(request: Request) {
   ].join('\n\n');
 
   try {
-    const upstream = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-goog-api-key': apiKey,
+    // Construct at request time so the runtime-provided credentials are available.
+    const ai = new GoogleGenAI({});
+    const result = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: [
+        ...history.map(({ role, text }) => ({
+          role: role === 'assistant' ? 'model' : 'user',
+          parts: [{ text }],
+        })),
+        { role: 'user', parts: [{ text: question }] },
+      ],
+      config: {
+        systemInstruction,
+        temperature: 0.45,
+        maxOutputTokens: 1024,
+        thinkingConfig: { thinkingBudget: 0 },
+        httpOptions: { timeout: 25000 },
       },
-      body: JSON.stringify({
-        system_instruction: { parts: [{ text: systemInstruction }] },
-        contents: [
-          ...history.map(({ role, text }) => ({
-            role: role === 'assistant' ? 'model' : 'user',
-            parts: [{ text }],
-          })),
-          { role: 'user', parts: [{ text: question }] },
-        ],
-        generationConfig: {
-          temperature: 0.45,
-          maxOutputTokens: 650,
-        },
-      }),
-      signal: AbortSignal.timeout(25000),
     });
-
-    if (!upstream.ok) {
-      if (upstream.status === 503 || upstream.status === 429) {
-        return jsonResponse({ text: groundedFallback(question, sources), sources: sources.map(({ title, href }) => ({ title, href })) });
-      }
-      return jsonResponse({
-        error: upstream.status === 429
-          ? 'Jeo is receiving too many questions right now. Please try again shortly.'
-          : 'I couldn’t reach Gemini right now. Please try again in a moment.',
-      }, upstream.status === 429 ? 429 : 502);
-    }
-
-    const result = await upstream.json() as {
-      candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
-    };
-    const text = result.candidates?.[0]?.content?.parts
-      ?.map((part) => part.text ?? '')
-      .join('')
-      .trim();
+    const text = result.text?.trim();
 
     if (!text) {
       return jsonResponse({ text: groundedFallback(question, sources), sources: sources.map(({ title, href }) => ({ title, href })) });
@@ -156,7 +133,11 @@ export default async function handler(request: Request) {
       text,
       sources: sources.map(({ title, href }) => ({ title, href })),
     });
-  } catch {
+  } catch (error) {
+    // Provider messages may contain request details; log only a numeric status.
+    const status = error instanceof Error && 'status' in error && typeof error.status === 'number'
+      ? error.status : undefined;
+    console.warn('Assistant generation failed', { status: status ?? 'unavailable' });
     return jsonResponse({ text: groundedFallback(question, sources), sources: sources.map(({ title, href }) => ({ title, href })) });
   }
 }

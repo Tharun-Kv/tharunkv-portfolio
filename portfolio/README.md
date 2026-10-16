@@ -2,11 +2,13 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Jeo portfolio assistant
 
-Jeo sends questions and a small set of relevant portfolio notes to Gemini through a Netlify Function. The Gemini key is read only by the function and must never use a `NEXT_PUBLIC_` prefix.
+Jeo sends questions and a small set of relevant portfolio notes to Gemini through a Netlify Function. The function uses the official Google Gen AI SDK and Gemini 2.5 Flash. Credentials stay on the server and must never use a `NEXT_PUBLIC_` prefix. Netlify AI Gateway can provide credentials automatically; an existing `GEMINI_API_KEY` uses your own Google account instead.
 
 For local development, copy `.env.example` to `.env.local`, set `GEMINI_API_KEY`, then run `npm run dev`. This starts Netlify Dev and the Next.js site together.
 
-For a deployed Netlify site, add `GEMINI_API_KEY` in **Project configuration → Environment variables** and enable the **Functions** scope, then redeploy.
+For a deployed Netlify site, add `GEMINI_API_KEY` in **Project configuration → Environment variables** and enable the **Functions** scope, then redeploy. Rotate any key shared in a chat or public location before using it.
+
+The static site has a single assistant endpoint, `/api/assistant`, served by `netlify/functions/assistant.mts`. Use Netlify Dev to run this endpoint locally; `next dev` alone does not serve Netlify Functions. If generation fails, Jeo returns relevant portfolio notes and logs only a safe status code for diagnosis.
 
 ## Getting Started
 
