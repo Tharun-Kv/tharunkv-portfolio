@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://tharunkv.netlify.app/sitemap.xml

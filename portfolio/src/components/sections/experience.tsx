@@ -12,7 +12,7 @@ const TechBullet = () => (
     <svg 
       viewBox="0 0 24 24" 
       fill="currentColor" 
-      className="absolute inset-0 text-[#ccff00] opacity-80"
+      className="absolute inset-0 text-[#5EEAD4] opacity-80"
     >
       <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
     </svg>
@@ -20,7 +20,7 @@ const TechBullet = () => (
       viewBox="0 0 24 24" 
       fill="none" 
       stroke="currentColor" 
-      className="absolute inset-0 text-[#ccff00] opacity-30 animate-[spin_4s_linear_infinite]"
+      className="absolute inset-0 text-[#5EEAD4] opacity-30 animate-[spin_4s_linear_infinite]"
     >
       <circle cx="12" cy="12" r="11" strokeWidth="1.5" strokeDasharray="4 4" />
     </svg>
@@ -29,13 +29,13 @@ const TechBullet = () => (
 
 export default function Experience() {
   return (
-    <section id="experience" className="py-32 relative z-10 border-t border-[#111]/30">
-      <div className="container mx-auto px-6 max-w-6xl">
+    <section id="experience" className="section-space relative z-10 border-t border-[#111]/30">
+      <div className="container mx-auto px-4 sm:px-6 max-w-6xl">
         <ScrollReveal>
           <SectionHeading number="02" title="Experience" subtitle="Where I've applied my skills" align="left" />
         </ScrollReveal>
 
-        <div className="mt-20 flex flex-col gap-12">
+        <div className="mt-12 flex flex-col gap-8 sm:mt-16 md:mt-20 md:gap-12">
           {experiences.map((exp) => (
             <ScrollReveal key={exp.id} delay={0.1} direction="up">
               <div className="relative group p-8 md:p-12 border border-[#222] bg-[#0a0a0a] rounded-3xl hover:border-[#444] transition-all duration-500 hover:-translate-y-1 overflow-hidden">

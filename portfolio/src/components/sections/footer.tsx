@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Mail } from 'lucide-react';
 import { GithubIcon, LinkedinIcon, LeetcodeIcon } from '@/components/ui/icons';
 import { siteConfig } from '@/data/portfolio';
@@ -8,7 +8,7 @@ export default function Footer() {
   
   return (
     <footer className="py-12 border-t border-[#111]">
-      <div className="container mx-auto px-6 max-w-6xl flex flex-col md:flex-row items-center justify-between gap-8">
+      <div className="container mx-auto px-4 sm:px-6 max-w-6xl flex flex-col md:flex-row items-center justify-between gap-8">
         <div className="flex flex-col items-center md:items-start gap-1">
           <span className="font-semibold text-lg tracking-tight text-white">{siteConfig.name}</span>
           <p className="text-[#666] font-medium text-xs tracking-wide">

@@ -43,7 +43,7 @@ export function MagneticButton({
     setPosition({ x: 0, y: 0 });
   };
 
-  const baseStyles = 'relative inline-flex items-center justify-center font-medium tracking-wide transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white disabled:pointer-events-none disabled:opacity-50 cursor-pointer overflow-hidden group rounded-full';
+  const baseStyles = 'relative inline-flex min-h-11 items-center justify-center font-medium tracking-wide transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white disabled:pointer-events-none disabled:opacity-50 cursor-pointer overflow-hidden group rounded-full';
   
   const variants = {
     primary: 'bg-white text-black hover:bg-[#e5e5e5]',
@@ -70,8 +70,8 @@ export function MagneticButton({
     >
       <span className="flex items-center gap-2">
         {children}
-        {icon && <span>{icon}</span>}
-        {external && <ExternalLink size={16} className="opacity-70 group-hover:opacity-100 transition-opacity" />}
+        {icon && <span aria-hidden="true">{icon}</span>}
+        {external && <ExternalLink aria-hidden="true" size={16} className="opacity-70 group-hover:opacity-100 transition-opacity" />}
       </span>
     </motion.div>
   );

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
 import { SectionHeading } from '@/components/ui/section-heading';
@@ -8,8 +8,8 @@ import { skills } from '@/data/portfolio';
 
 export default function Skills() {
   return (
-    <section id="skills" className="py-32 relative z-10 border-t border-[#111]/30">
-      <div className="container mx-auto px-6 max-w-6xl">
+    <section id="skills" className="section-space relative z-10 border-t border-[#111]/30">
+      <div className="container mx-auto px-4 sm:px-6 max-w-6xl">
         <ScrollReveal>
           <SectionHeading number="04" title="Technical Domain Proficiencies" subtitle="Capabilities & Tools" align="left" />
         </ScrollReveal>

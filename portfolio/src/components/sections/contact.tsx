@@ -19,13 +19,13 @@ export default function Contact() {
   };
 
   return (
-    <section id="contact" className="py-32 relative z-10 border-t border-[#111]/30">
-      <div className="container mx-auto px-6 relative z-10 max-w-6xl">
+    <section id="contact" className="section-space relative z-10 border-t border-[#111]/30">
+      <div className="container mx-auto px-4 sm:px-6 relative z-10 max-w-6xl">
         <ScrollReveal>
           <div className="flex flex-col items-center text-center mb-16">
             <div className="flex items-center gap-4 mb-6">
               <span className="text-[#888] text-sm md:text-base font-medium tracking-widest">
-                07
+                08
               </span>
               <div className="h-[1px] w-8 bg-[#333]" />
             </div>
@@ -34,7 +34,7 @@ export default function Contact() {
               <AnimatedText 
                 text="Let's Connect"
                 as="h2"
-                className="text-6xl md:text-8xl lg:text-[9rem] font-semibold tracking-tight leading-tight"
+                className="text-[clamp(3.25rem,13vw,6rem)] md:text-8xl lg:text-[9rem] font-semibold tracking-tight leading-tight [text-wrap:balance]"
               />
             </div>
           </div>
@@ -97,11 +97,20 @@ export default function Contact() {
             <div className="mt-24 grid grid-cols-1 gap-8 border-t border-[#111] pt-12 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
               <div className="grid grid-cols-1 gap-6 text-left sm:grid-cols-2">
                 {[
-                  { label: 'Based in', lines: siteConfig.locationDisplay },
-                  { label: 'Native Place', lines: siteConfig.nativeLocationDisplay },
+                  { label: 'Based in', lines: siteConfig.locationDisplay, mapAddress: siteConfig.addressLine1 },
+                  { label: 'Native Place', lines: siteConfig.nativeLocationDisplay, mapAddress: siteConfig.addressLine2 },
                 ].map((address) => (
                   <div key={address.label} className="flex items-start gap-3">
-                    <MapPin className="mt-1 h-4 w-4 shrink-0 text-[#666]" />
+                    <a
+                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address.mapAddress)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`Open exact ${address.label.toLowerCase()} location in Google Maps`}
+                      title="Open exact location in Google Maps"
+                      className="mt-1 shrink-0 rounded-sm text-[#666] transition-colors hover:text-[#B8ACFF] active:text-[#B8ACFF] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#B8ACFF]"
+                    >
+                      <MapPin className="h-4 w-4" aria-hidden="true" />
+                    </a>
                     <div>
                       <p className="mb-2 text-xs font-medium uppercase tracking-widest text-[#666]">{address.label}</p>
                       <address className="not-italic text-sm font-medium leading-relaxed text-[#888] md:text-base">
@@ -121,15 +130,17 @@ export default function Contact() {
                   <Phone className="h-4 w-4 text-[#666]" />
                   <span>{siteConfig.phone}</span>
                 </a>
-                <button 
+                <button
+                  type="button"
                   onClick={handleCopyEmail}
+                  aria-label={`Copy email address ${email}`}
                   className="group flex items-center gap-4 text-left text-sm font-medium tracking-wide text-[#888] transition-colors hover:text-white md:text-base"
                 >
                   <div className="rounded-full border border-[#333] bg-[#111] p-2 group-hover:border-[#555]">
                     {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                   </div>
-                  <span>{email}</span>
-                  {copied && <span className="ml-2 rounded-full bg-white px-2 py-1 text-xs text-black">Copied</span>}
+                  <span className="break-all">{email}</span>
+                  {copied && <span role="status" className="ml-2 rounded-full bg-white px-2 py-1 text-xs text-black">Copied</span>}
                 </button>
               </div>
             </div>
