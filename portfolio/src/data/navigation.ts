@@ -10,4 +10,5 @@ export const navLinks: NavItem[] = [
   { label: "Skills", href: "#skills" },
   { label: "Achievements", href: "#achievements" },
   { label: "Certifications", href: "#certifications" },
+  { label: "Resume", href: "#resume" },
 ];

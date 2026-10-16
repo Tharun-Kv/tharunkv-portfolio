@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { AnimatedText } from './animated-text';
 
 interface SectionHeadingProps {
@@ -16,6 +16,7 @@ export function SectionHeading({
   subtitle,
   align = 'left',
 }: SectionHeadingProps) {
+  const shouldReduceMotion = useReducedMotion();
   const alignClass = align === 'center' 
     ? 'items-center text-center' 
     : align === 'right' 
@@ -25,10 +26,10 @@ export function SectionHeading({
   return (
     <div className={`flex flex-col mb-16 md:mb-24 ${alignClass}`}>
       <motion.div 
-        initial={{ opacity: 0, y: 10 }}
-        whileInView={{ opacity: 1, y: 0 }}
+        initial={shouldReduceMotion ? false : { opacity: 0, y: 10 }}
+        whileInView={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
-        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        transition={{ duration: shouldReduceMotion ? 0 : 0.8, ease: [0.16, 1, 0.3, 1] }}
         className={`flex items-center gap-4 mb-4 ${align === 'center' ? 'justify-center' : align === 'right' ? 'justify-end' : 'justify-start'}`}
       >
         <span className="font-mono text-sm md:text-base text-[#888] font-medium tracking-widest">

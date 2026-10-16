@@ -10,16 +10,6 @@ import {
 import { FaJava, FaAws } from 'react-icons/fa';
 import { VscDatabase, VscSparkle } from 'react-icons/vsc';
 
-// Custom image icon for officially supported logos missing from the older react-icons bundle
-const CdnIcon = ({ slug, title }: { slug: string, title: string }) => (
-  <img 
-    src={`https://cdn.simpleicons.org/${slug}/white`} 
-    alt={`${title} logo`} 
-    className="w-full h-full object-contain"
-    aria-hidden="true"
-  />
-);
-
 export function getSkillIcon(skillName: string) {
   const s = skillName.toLowerCase();
   
@@ -29,8 +19,7 @@ export function getSkillIcon(skillName: string) {
   if (s.includes('java') && !s.includes('javascript')) return <FaJava />;
   if (s.includes('fastapi')) return <SiFastapi />;
   if (s.includes('gemini')) return <SiGooglegemini />;
-  if (s.includes('openai')) return <CdnIcon slug="openai" title="OpenAI" />;
-  if (s.includes('whisper')) return <CdnIcon slug="openai" title="Whisper" />;
+  if (s.includes('openai') || s.includes('whisper')) return <VscSparkle />;
   if (s.includes('llm') || s.includes('prompt')) return <VscSparkle />;
   if (s.includes('next.js')) return <SiNextdotjs />;
   if (s.includes('react')) return <SiReact />;

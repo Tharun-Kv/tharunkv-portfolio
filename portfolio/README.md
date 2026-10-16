@@ -1,5 +1,13 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Jeo portfolio assistant
+
+Jeo sends questions and a small set of relevant portfolio notes to Gemini through a Netlify Function. The Gemini key is read only by the function and must never use a `NEXT_PUBLIC_` prefix.
+
+For local development, copy `.env.example` to `.env.local`, set `GEMINI_API_KEY`, then run `npm run dev`. This starts Netlify Dev and the Next.js site together.
+
+For a deployed Netlify site, add `GEMINI_API_KEY` in **Project configuration → Environment variables** and enable the **Functions** scope, then redeploy.
+
 ## Getting Started
 
 First, run the development server:

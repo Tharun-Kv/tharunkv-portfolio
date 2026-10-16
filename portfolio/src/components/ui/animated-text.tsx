@@ -1,16 +1,31 @@
 'use client';
 
-import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
+
+const motionComponents = {
+  span: motion.span,
+  h1: motion.h1,
+  h2: motion.h2,
+  h3: motion.h3,
+  h4: motion.h4,
+  p: motion.p,
+};
 
 interface AnimatedTextProps {
   text: string;
   className?: string;
   delay?: number;
-  as?: React.ElementType;
+  as?: keyof typeof motionComponents;
 }
 
-export function AnimatedText({ text, className = '', delay = 0, as: Component = 'span' }: AnimatedTextProps) {
+export function AnimatedText({ text, className = '', delay = 0, as = 'span' }: AnimatedTextProps) {
+  const shouldReduceMotion = useReducedMotion();
+
+  if (shouldReduceMotion) {
+    const StaticComponent = as;
+    return <StaticComponent className={className}>{text}</StaticComponent>;
+  }
+
   // Apple-style premium easing (easeOutExpo / smooth cubic-bezier)
   const premiumEasing = [0.16, 1, 0.3, 1] as const;
 
@@ -45,7 +60,7 @@ export function AnimatedText({ text, className = '', delay = 0, as: Component = 
   // Split text while preserving spaces
   const characters = text.split('');
 
-  const MotionComponent = motion.create(Component);
+  const MotionComponent = motionComponents[as];
 
   return (
     <MotionComponent

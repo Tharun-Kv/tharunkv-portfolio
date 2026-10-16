@@ -124,6 +124,24 @@ export const experiences: Experience[] = [
 
 export const projects: Project[] = [
   {
+    id: "proj-ufdr-analysis",
+    title: "AI-Powered UFDR Analysis Tool",
+    description: "RAG-based investigation support for large-scale mobile forensic data.",
+    longDescription: "Built a UFDR analysis tool using LangChain, ChromaDB, and Neo4j to support investigation of large mobile-forensic datasets. The project was selected for the Smart India Hackathon National Finale.",
+    techStack: ["Python", "RAG", "LangChain", "ChromaDB", "Neo4j"],
+    category: ["AI / ML", "Digital Forensics"],
+    featured: true
+  },
+  {
+    id: "proj-ai-content-pipeline",
+    title: "AI Content Generation Pipeline",
+    description: "An end-to-end workflow for SEO research, AI blog generation, and editorial review.",
+    longDescription: "Built a Python and FastAPI pipeline that uses OpenAI and Gemini APIs for content generation, RSS feeds and RAKE for topic and competitor research, and Sanity CMS for publishing. Added editorial quality checks and a review workflow during an AI/ML Engineering internship at Dview.",
+    techStack: ["Python", "FastAPI", "OpenAI", "Gemini", "RAKE NLP", "Sanity CMS"],
+    category: ["Generative AI", "Backend"],
+    featured: true
+  },
+  {
     id: "proj-3",
     title: "Smart E-Commerce Website",
     description: "React-based e-commerce frontend with product comparison.",
@@ -220,7 +238,7 @@ export const achievements: Achievement[] = [
     description: "Selected for the Smart India Hackathon Grand Finale. Built a UFDR Analysis Tool for investigating large-scale mobile forensic data using technologies including RAG, LangChain, ChromaDB, and Neo4j.",
     badge: "NATIONAL FINALIST",
     image: "/sih-hackathon.jpg",
-    certificateLink: "/sih-cert.jpg",
+    certificateLink: "/sih-certificate.jpg",
     details: [
       { label: "Organization", value: "Ministry of Home Affairs (MHA)" },
       { label: "Team", value: "Metrominds_Gblr" },
@@ -235,7 +253,7 @@ export const achievements: Achievement[] = [
     description: "Participated in the biomedical hackathon focused on solving real-world healthcare problems. Developed and presented an automated injection system prototype within a competitive, time-constrained environment.",
     badge: "RUNNER UP",
     image: "/biomed-hackathon.png",
-    certificateLink: "/biomed-cert.png",
+    certificateLink: "/biomed-certificate.png",
     details: [
       { label: "Team Name", value: "KEMPEGOWDA" },
       { label: "Award", value: "Runner-up (₹25,000)" }

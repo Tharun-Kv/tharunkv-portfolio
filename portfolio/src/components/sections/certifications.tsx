@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { ScrollReveal } from '@/components/ui/scroll-reveal';
 import { AnimatedText } from '@/components/ui/animated-text';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { Award, ChevronDown, Eye, X } from 'lucide-react';
+import { SiCoursera, SiTata } from 'react-icons/si';
 
 type FilterType = 'All' | 'AI/GenAI' | 'Cloud' | 'Data' | 'Professional';
 
@@ -52,11 +53,17 @@ const filters: FilterType[] = ['All', 'AI/GenAI', 'Data', 'Cloud', 'Professional
 function IssuerLogo({ issuer }: { issuer: string }) {
   switch (issuer) {
     case 'TATA':
-      return <Image src="https://upload.wikimedia.org/wikipedia/commons/8/86/Tata_logo.svg" alt="Tata" width={24} height={24} unoptimized className="h-6 w-6 object-contain brightness-0 invert opacity-90" />;
+      return <SiTata size={28} role="img" aria-label="Tata logo" className="text-white opacity-90" />;
     case 'AWS':
-      return <Image src="https://upload.wikimedia.org/wikipedia/commons/9/93/Amazon_Web_Services_Logo.svg" alt="AWS" width={28} height={28} unoptimized className="h-7 w-7 object-contain brightness-0 invert opacity-90" />;
+      return (
+        <svg viewBox="0 0 48 36" role="img" aria-label="AWS logo" className="h-8 w-9" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <text x="4" y="24" fill="white" fontFamily="Arial, sans-serif" fontSize="22" fontWeight="700" letterSpacing="-1.5">aws</text>
+          <path d="M9 29.5c9.2 5.3 21.7 5.4 31.1-.2" stroke="#FF9900" strokeWidth="2.3" strokeLinecap="round" />
+          <path d="m37.2 26.5 3.8 2.8-4.2 1.6" fill="#FF9900" />
+        </svg>
+      );
     case 'COURSERA':
-      return <Image src="https://upload.wikimedia.org/wikipedia/commons/5/5f/Coursera_logo_%282020%29.svg" alt="Coursera" width={24} height={24} unoptimized className="h-6 w-6 object-contain brightness-0 invert opacity-90" />;
+      return <SiCoursera size={26} role="img" aria-label="Coursera logo" className="text-white opacity-90" />;
     case 'UNSTOP':
       return <span className="font-bold text-[10px] tracking-tighter text-white opacity-90 italic">unstop</span>;
     default:
@@ -66,20 +73,21 @@ function IssuerLogo({ issuer }: { issuer: string }) {
 
 function CertificateCard({ cert, index, onOpen }: { cert: Cert; index: number; onOpen: (cert: Cert) => void }) {
   const [previewError, setPreviewError] = useState(false);
+  const shouldReduceMotion = useReducedMotion();
   const previewUrl = `https://drive.google.com/thumbnail?id=${cert.id}&sz=w800`;
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={shouldReduceMotion ? false : { opacity: 0, y: 30 }}
+      whileInView={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.7, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ duration: shouldReduceMotion ? 0 : 0.7, delay: shouldReduceMotion ? 0 : index * 0.08, ease: [0.16, 1, 0.3, 1] }}
     >
       <button
         type="button"
         onClick={() => onOpen(cert)}
         aria-label={`View ${cert.title} from ${cert.issuer}`}
-        className="group relative flex h-full w-full flex-col overflow-hidden rounded-3xl border border-[#222] bg-[#080808] text-left transition-all duration-500 hover:-translate-y-1 hover:border-[#444] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#ccff00]"
+        className="group relative flex h-full w-full flex-col overflow-hidden rounded-3xl border border-[#222] bg-[#080808] text-left transition-all duration-500 hover:-translate-y-1 hover:border-[#444] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#B8ACFF]"
       >
         <div className="absolute inset-0 bg-white/[0.02] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
         
@@ -139,7 +147,7 @@ function CertificateCard({ cert, index, onOpen }: { cert: Cert; index: number; o
               {cert.category}
             </span>
             
-            <div className="flex items-center gap-2 text-sm font-medium tracking-wide text-white group-hover:text-[#ccff00] transition-colors">
+            <div className="flex items-center gap-2 text-sm font-medium tracking-wide text-white group-hover:text-[#B8ACFF] transition-colors">
               <Eye size={16} className="transition-transform group-hover:scale-110" />
               View Certificate
             </div>
@@ -154,21 +162,46 @@ export default function Certifications() {
   const [activeFilter, setActiveFilter] = useState<FilterType>('All');
   const [showAll, setShowAll] = useState(false);
   const [selectedCert, setSelectedCert] = useState<Cert | null>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const openerRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     if (!selectedCert) return;
 
+    openerRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     const previousOverflow = document.body.style.overflow;
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setSelectedCert(null);
+      if (event.key === 'Escape') {
+        setSelectedCert(null);
+        return;
+      }
+
+      if (event.key === 'Tab') {
+        const focusable = dialogRef.current?.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), iframe, [tabindex]:not([tabindex="-1"])'
+        );
+        if (!focusable?.length) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      }
     };
 
     document.body.style.overflow = 'hidden';
     window.addEventListener('keydown', handleKeyDown);
+    closeButtonRef.current?.focus();
 
     return () => {
       document.body.style.overflow = previousOverflow;
       window.removeEventListener('keydown', handleKeyDown);
+      openerRef.current?.focus();
     };
   }, [selectedCert]);
 
@@ -182,14 +215,14 @@ export default function Certifications() {
     : allCerts.filter(c => c.filterCat.includes(activeFilter));
 
   return (
-    <section id="certifications" className="py-32 relative z-10 border-t border-[#111]/30">
-      <div className="container mx-auto px-6 max-w-6xl">
+    <section id="certifications" className="section-space relative z-10 border-t border-[#111]/30">
+      <div className="container mx-auto px-4 sm:px-6 max-w-6xl">
         
         {/* Section Header */}
         <div className="mb-16">
           <ScrollReveal>
             <div className="flex flex-col items-start mb-6">
-              <span className="text-[#ccff00] font-mono text-sm tracking-widest mb-4">06</span>
+              <span className="text-[#5EEAD4] font-mono text-sm tracking-widest mb-4">06</span>
               <div className="overflow-hidden">
                 <AnimatedText 
                   text="Certifications & Credentials"
@@ -209,7 +242,7 @@ export default function Certifications() {
 
         {/* Filters */}
         <ScrollReveal delay={0.3} direction="up">
-          <div className="flex flex-wrap gap-3 mb-12">
+          <div role="group" aria-label="Filter certifications" className="flex flex-wrap gap-3 mb-12">
             {filters.map((filter) => (
               <button
                 key={filter}
@@ -219,7 +252,7 @@ export default function Certifications() {
                   setActiveFilter(filter);
                   if (filter !== 'All') setShowAll(true);
                 }}
-                className={`px-5 py-2.5 rounded-full text-sm font-medium tracking-wide transition-all duration-300 ${
+                className={`min-h-11 px-5 py-2.5 rounded-full text-sm font-medium tracking-wide transition-all duration-300 ${
                   activeFilter === filter
                     ? 'bg-white text-black'
                     : 'bg-[#111] text-[#888] border border-[#222] hover:border-[#555] hover:text-white'
@@ -246,7 +279,7 @@ export default function Certifications() {
             <div className="mt-16 flex justify-center">
               <button
                 onClick={() => setShowAll(!showAll)}
-                className="group flex items-center gap-3 px-8 py-4 bg-[#0a0a0a] border border-[#333] hover:border-[#ccff00] hover:bg-[#111] text-[#e5e5e5] hover:text-[#ccff00] rounded-full text-sm font-medium tracking-wide transition-all duration-300"
+                className="group flex min-h-11 items-center gap-3 px-8 py-4 bg-[#0a0a0a] border border-[#333] hover:border-[#B8ACFF] active:border-[#B8ACFF] hover:bg-[#111] text-[#e5e5e5] hover:text-[#B8ACFF] active:text-[#B8ACFF] rounded-full text-sm font-medium tracking-wide transition-all duration-300"
               >
                 {showAll ? 'Show Featured Only' : 'View All Certifications'}
                 <ChevronDown 
@@ -272,6 +305,7 @@ export default function Certifications() {
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="certificate-viewer-title"
+                ref={dialogRef}
                 className="flex max-h-[92vh] w-full max-w-6xl flex-col overflow-hidden rounded-2xl border border-[#333] bg-[#080808]"
                 initial={{ opacity: 0, y: 24, scale: 0.98 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -280,15 +314,24 @@ export default function Certifications() {
                 onClick={(event) => event.stopPropagation()}
               >
                 <div className="flex items-center justify-between gap-4 border-b border-[#222] px-5 py-4 md:px-7">
-                  <div className="min-w-0">
-                    <h3 id="certificate-viewer-title" className="truncate text-base font-semibold text-white md:text-lg">{selectedCert.title}</h3>
-                    <p className="mt-1 text-sm text-[#888]">{selectedCert.issuer} <span className="px-1 text-[#555]">·</span> {selectedCert.category}</p>
-                  </div>
-                  <button
+                <div className="min-w-0">
+                  <h3 id="certificate-viewer-title" className="truncate text-base font-semibold text-white md:text-lg">{selectedCert.title}</h3>
+                  <p className="mt-1 text-sm text-[#888]">{selectedCert.issuer} <span className="px-1 text-[#555]">·</span> {selectedCert.category}</p>
+                </div>
+                <a
+                  href={`https://drive.google.com/file/d/${selectedCert.id}/view`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hidden min-h-11 shrink-0 items-center rounded-full border border-[#333] px-4 text-sm text-[#ccc] transition-colors hover:border-[#777] hover:text-white sm:inline-flex"
+                >
+                  Open in Google Drive
+                </a>
+                <button
                     type="button"
+                    ref={closeButtonRef}
                     onClick={() => setSelectedCert(null)}
                     aria-label="Close certificate viewer"
-                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#333] text-[#aaa] transition-colors hover:border-[#555] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ccff00]"
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#333] text-[#aaa] transition-colors hover:border-[#555] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#B8ACFF]"
                   >
                     <X size={18} />
                   </button>

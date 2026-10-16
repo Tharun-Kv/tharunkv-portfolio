@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useEffect, useRef } from 'react';
+import Image from 'next/image';
+import { Bot, BrainCircuit, CircuitBoard, Cpu, Wrench } from 'lucide-react';
 
 export function BackgroundAtmosphere() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -14,6 +16,8 @@ export function BackgroundAtmosphere() {
     if (!ctx) return;
 
     let animationFrameId: number;
+    let isVisible = true;
+    let isDocumentVisible = document.visibilityState === 'visible';
     let w = canvas.width = window.innerWidth;
     let h = canvas.height = window.innerHeight;
     let scrollY = window.scrollY;
@@ -32,12 +36,34 @@ export function BackgroundAtmosphere() {
       scrollY = window.scrollY;
     };
 
-    window.addEventListener('mousemove', handleMouseMove, { passive: true });
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    window.addEventListener('resize', () => {
+    const handleResize = () => {
       w = canvas.width = window.innerWidth;
       h = canvas.height = window.innerHeight;
+    };
+
+    const handleVisibilityChange = () => {
+      isDocumentVisible = document.visibilityState === 'visible';
+      if (isVisible && isDocumentVisible && !respectReducedMotion) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = requestAnimationFrame(render);
+      }
+    };
+
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleResize, { passive: true });
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    const observer = new IntersectionObserver(([entry]) => {
+      isVisible = entry.isIntersecting;
+      if (isVisible && isDocumentVisible && !respectReducedMotion) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = requestAnimationFrame(render);
+      } else {
+        cancelAnimationFrame(animationFrameId);
+      }
     });
+    observer.observe(canvas);
 
     // 1. Neural Network / Data Particles
     const particles = Array.from({ length: 50 }).map(() => ({
@@ -101,9 +127,9 @@ export function BackgroundAtmosphere() {
         const sy = stream.y - scrollY * stream.z;
         if (sy > -200 && sy < h + 200) {
           const gradient = ctx.createLinearGradient(0, sy, 0, sy + stream.length);
-          gradient.addColorStop(0, 'rgba(204, 255, 0, 0)');
-          gradient.addColorStop(0.5, 'rgba(204, 255, 0, 0.03)');
-          gradient.addColorStop(1, 'rgba(204, 255, 0, 0)');
+          gradient.addColorStop(0, 'rgba(94, 234, 212, 0)');
+          gradient.addColorStop(0.5, 'rgba(94, 234, 212, 0.03)');
+          gradient.addColorStop(1, 'rgba(94, 234, 212, 0)');
           
           ctx.beginPath();
           ctx.moveTo(stream.x, sy);
@@ -211,7 +237,7 @@ export function BackgroundAtmosphere() {
               ctx.lineTo(r2X, r2Y);
               
               if (Math.random() < 0.0005 && !respectReducedMotion) {
-                ctx.strokeStyle = `rgba(204, 255, 0, 0.25)`;
+                ctx.strokeStyle = `rgba(94, 234, 212, 0.25)`;
                 ctx.lineWidth = 1.5;
               } else {
                 ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
@@ -223,15 +249,20 @@ export function BackgroundAtmosphere() {
         }
       });
 
-      animationFrameId = requestAnimationFrame(render);
+      if (!respectReducedMotion && isVisible && isDocumentVisible) {
+        animationFrameId = requestAnimationFrame(render);
+      }
     };
 
     render();
 
     return () => {
       cancelAnimationFrame(animationFrameId);
+      observer.disconnect();
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleResize);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, []);
 
@@ -246,11 +277,47 @@ export function BackgroundAtmosphere() {
         }}
       />
 
-      <canvas 
+      <canvas
+        aria-hidden="true"
         ref={canvasRef} 
-        className="absolute inset-0 w-full h-full opacity-60"
+        className="absolute inset-0 hidden h-full w-full opacity-60 sm:block"
         style={{ filter: 'blur(0.5px)', mixBlendMode: 'screen' }}
       />
+
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div
+          className="portfolio-morph-shadow absolute -right-[18vw] -top-[24vh] h-[min(76vw,860px)] w-[min(76vw,860px)]"
+          style={{ background: 'radial-gradient(ellipse at 36% 42%, rgba(94,234,212,0.19), transparent 63%), radial-gradient(ellipse at 68% 58%, rgba(184,172,255,0.15), transparent 68%)' }}
+        />
+        <div
+          className="portfolio-morph-shadow absolute -bottom-[34vh] -left-[18vw] h-[min(66vw,760px)] w-[min(66vw,760px)]"
+          style={{ background: 'radial-gradient(ellipse at 48% 48%, rgba(184,172,255,0.15), transparent 64%), radial-gradient(ellipse at 63% 32%, rgba(94,234,212,0.1), transparent 70%)', animationDelay: '-13s' }}
+        />
+
+        <div
+          className="absolute -right-[9vw] -top-[5vh] hidden h-[95vh] w-[min(50vw,640px)] opacity-[0.1] mix-blend-screen lg:block"
+          style={{
+            maskImage: 'radial-gradient(ellipse 60% 67% at 48% 43%, #000 22%, rgba(0,0,0,0.72) 47%, transparent 79%)',
+            WebkitMaskImage: 'radial-gradient(ellipse 60% 67% at 48% 43%, #000 22%, rgba(0,0,0,0.72) 47%, transparent 79%)',
+          }}
+        >
+          <Image
+            src="/profile.png"
+            alt=""
+            aria-hidden="true"
+            fill
+            sizes="(max-width: 1280px) 50vw, 640px"
+            className="object-cover object-top opacity-45 grayscale"
+            style={{ filter: 'grayscale(1) contrast(1.12) brightness(0.68)' }}
+          />
+        </div>
+
+        <Bot className="absolute -left-[8rem] top-[28vh] h-[clamp(17rem,35vw,31rem)] w-[clamp(17rem,35vw,31rem)] text-[#5EEAD4] opacity-[0.04] stroke-[0.7]" />
+        <BrainCircuit className="absolute right-[7vw] top-[48vh] h-[clamp(11rem,23vw,20rem)] w-[clamp(11rem,23vw,20rem)] text-[#B8ACFF] opacity-[0.06] stroke-[0.8]" />
+        <Cpu className="absolute left-[15vw] top-[67vh] hidden h-32 w-32 text-[#B8ACFF] opacity-[0.055] stroke-[0.8] sm:block" />
+        <CircuitBoard className="absolute left-[43vw] top-[79vh] hidden h-36 w-36 text-[#5EEAD4] opacity-[0.04] stroke-[0.8] md:block" />
+        <Wrench className="absolute bottom-[8vh] right-[14vw] hidden h-24 w-24 -rotate-12 text-[#5EEAD4] opacity-[0.055] stroke-[0.8] sm:block" />
+      </div>
 
       {/* Layer 6: Vignette / Gradients */}
       <div 

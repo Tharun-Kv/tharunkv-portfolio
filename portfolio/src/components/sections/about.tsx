@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
 import Image from 'next/image';
@@ -9,8 +9,8 @@ import { education } from '@/data/portfolio';
 
 export default function About() {
   return (
-    <section id="about" className="py-32 relative z-10 border-t border-[#111]/30">
-      <div className="container mx-auto px-6 max-w-6xl">
+    <section id="about" className="section-space relative z-10 border-t border-[#111]/30">
+      <div className="container mx-auto px-4 sm:px-6 max-w-6xl">
         <ScrollReveal>
           <SectionHeading number="01" title="About Me" subtitle="Who I am & What I build" align="left" />
         </ScrollReveal>
@@ -20,7 +20,7 @@ export default function About() {
             <AnimatedText 
               text="        I build AI-powered applications and robust full-stack systems."
               as="h3"
-              className="text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight text-white mb-8 leading-tight"
+              className="text-[clamp(2rem,7vw,2.5rem)] md:text-5xl lg:text-6xl font-medium tracking-tight text-white mb-8 leading-tight [text-wrap:balance]"
             />
             
             <ScrollReveal delay={0.4} direction="up">
@@ -50,7 +50,6 @@ export default function About() {
                   fill 
                   className="object-cover object-center scale-105 transition-transform duration-700 ease-in-out group-hover:scale-100"
                   sizes="(max-width: 768px) 100vw, 50vw"
-                  priority
                 />
               </div>
             </ScrollReveal>
