@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+/* Hide the public Powered by Netlify badge injected after page load. */
+iframe#nl-badge-frame {
+  display: none !important;
+}
+
 @theme {
   --color-ink-950: #000000;
   --color-ink-900: #0a0a0a;
