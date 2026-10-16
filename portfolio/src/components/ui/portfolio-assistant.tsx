@@ -61,7 +61,7 @@ function getRelevantKnowledge(question: string) {
   if (/\b(all details|my details|about me|tell me about him)\b/.test(normalizedQuestion)) {
     queryWords.push('profile', 'about');
   }
-  if (/\b(cv|resume|rÃ©sumÃ©)\b/.test(normalizedQuestion)) queryWords.push('resume');
+  if (/\b(cv|resume|résumé)\b/.test(normalizedQuestion)) queryWords.push('resume');
 
   if (queryWords.length === 0) return [];
 
@@ -173,7 +173,7 @@ export default function PortfolioAssistant() {
       const result = await response.json().catch(() => null) as { text?: unknown; error?: unknown } | null;
 
       if (!response.ok || typeof result?.text !== 'string') {
-        throw new Error(typeof result?.error === 'string' ? result.error : 'I couldnâ€™t reach Gemini right now. Please try again in a moment.');
+        throw new Error(typeof result?.error === 'string' ? result.error : 'I couldn’t reach Gemini right now. Please try again in a moment.');
       }
 
       setMessages((current) => [
@@ -186,7 +186,7 @@ export default function PortfolioAssistant() {
         {
           id: userMessageId + 1,
           role: 'assistant',
-          text: error instanceof Error ? error.message : 'I couldnâ€™t reach Gemini right now. Please try again in a moment.',
+          text: error instanceof Error ? error.message : 'I couldn’t reach Gemini right now. Please try again in a moment.',
         },
       ]);
     } finally {
